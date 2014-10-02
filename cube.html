@@ -29,8 +29,57 @@
         document.addEventListener( 'mousedown', onDocumentMouseDown, false );
  
         camera.position.z = 1000;
- 
-                                
+
+        /*Star background */
+        /*
+        var stars = new THREE.Geometry();
+        for (var i=0; i<100; i++) {
+          stars.vertices.push(new THREE.Vector3(1e3 * Math.random() - 5e2,1e3 * Math.random() - 5e2,-1e2));
+        }
+        var star_stuff = new THREE.ParticleBasicMaterial();
+        var star_system = new THREE.ParticleSystem(stars, star_stuff);
+        scene.add(star_system);
+        */
+
+
+        function drawline( distance, color) {
+            var geometry  = new THREE.Geometry();
+            var origin = new THREE.Vector3( 0, 0, 0 );
+            var material;
+
+            material = new THREE.LineBasicMaterial({color: color });
+            geometry.vertices.push( origin,distance );
+            var line = new THREE.Line( geometry, material);
+
+            return line;
+
+        }
+
+        function axeBuilder() {
+            var axes = new THREE.Object3D();
+            var width = window.innerWidth;
+
+            axes.add( drawline(new THREE.Vector3( width, 0, 0 ), 0xFF0000) ); 
+            axes.add( drawline(new THREE.Vector3( -width, 0, 0 ), 0xFF0000 ) ); 
+            axes.add( drawline(new THREE.Vector3( 0, width, 0 ), 0x00FF00  ) ); 
+            axes.add( drawline(new THREE.Vector3( 0, -width, 0 ), 0x00FF00  ) );
+
+            return axes;
+
+        }
+
+
+        scene.add(axeBuilder());
+
+        function distance ( v1,  v2)
+        {
+            var dx = v1.position.x - v2.position.x;
+            var dy = v1.position.y - v2.position.y;
+            var dz = v1.position.z - v2.position.z;
+
+            return Math.sqrt(dx*dx+dy*dy+dz*dz);
+        }
+
         function onDocumentMouseMove( event ) {
             event.preventDefault();
 
@@ -85,7 +134,9 @@
             return (intersects.length > 0) ? true : false;
         }
 
-        function collision(){
+
+        /** Need to test **/ 
+        /*function collision(){
             for (var vertexIndex = 0; vertexIndex < MovingCube.geometry.vertices.length; vertexIndex++)
             {       
                 var localVertex = MovingCube.geometry.vertices[vertexIndex].clone();
@@ -97,7 +148,7 @@
                 if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ) 
                 console.log(" Hit ");
             }
-        }
+        }*/
 
         function hit(){
 
@@ -123,11 +174,14 @@
                  //addCube();
                 cubes[i].position.y += 2;
                 if(cubes[i].position.y > 1)
-               
                     uping[i] = false;
+                    cubes[i].position.x = -300
+
               
                 }
                 
+                if(cubes[1])
+                    console.log(distance(cubes[i],cubes[1]));
             };
             renderer.render(scene, camera);
         };
