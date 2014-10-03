@@ -16,7 +16,7 @@
         var mouse = new THREE.Vector2(), INTERSECTED;
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
-        var geometry = new THREE.BoxGeometry(200, 200, 200, 2, 2, 2);
+        var geometry = new THREE.BoxGeometry(200, 200, 200, 1, 1, 1);
         var material = new THREE.MeshBasicMaterial({color: 0xfffff, wireframe: true});
         var cube = new THREE.Mesh(geometry, material);
         var uping = [];
@@ -32,13 +32,10 @@
 
         /*Star background */
         /*
-        var stars = new THREE.Geometry();
-        for (var i=0; i<100; i++) {
-          stars.vertices.push(new THREE.Vector3(1e3 * Math.random() - 5e2,1e3 * Math.random() - 5e2,-1e2));
+        for (var i=0; i < 100; i++) {
+          var particle = new THREE.Particle(new THREE.Vector3D(x, y, z));
+          scene.add(particle);
         }
-        var star_stuff = new THREE.ParticleBasicMaterial();
-        var star_system = new THREE.ParticleSystem(stars, star_stuff);
-        scene.add(star_system);
         */
 
 
@@ -67,6 +64,10 @@
             return axes;
 
         }
+
+        // need to do init function
+
+
 
 
         scene.add(axeBuilder());
@@ -150,10 +151,34 @@
             }
         }*/
 
-        function hit(){
+        function hit(v1){
+            for (var i = cubes.length - 1; i >= 0; i--) {
+                if(v1.id != cubes[i].id){
+                    if(v1.position.x == cubes[i].position.x || v1.position.y == cubes[i].position.y){
+                        console.log("hit")
+                        if(cubes[i].position.x != -300)
+                            cubes[i].position.x = -300;
+                    }
 
+                }
+            };
         }
 
+
+        function hitv2(v1){
+
+            for (var i = cubes.length - 1; i >= 0; i--) {
+                for (var vertexIndex = 0; vertexIndex < cubes[i].geometry.vertices.length; vertexIndex++)
+                {  
+                    var localVertex = cubes[i].geometry.vertices[vertexIndex];
+                    console.log(localVertex.position);
+                    console.log(localVertex);
+                }
+
+            }
+        }
+
+var dev = true;
         //render
         function render() {
             requestAnimationFrame(render);
@@ -175,13 +200,27 @@
                 cubes[i].position.y += 2;
                 if(cubes[i].position.y > 1)
                     uping[i] = false;
-                    cubes[i].position.x = -300
 
-              
+
+                    cubes[i].position.x += Math.random();
+                   // cubes[i].position.x = -300
+                   /*cubes[i].geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 1, 0.1, 0.1 ));
+                   cubes[i].geometry.verticesNeedUpdate = true;*/
+
                 }
                 
-                if(cubes[1])
-                    console.log(distance(cubes[i],cubes[1]));
+                if(dev && cubes[1]){
+hitv2();
+                    console.log(cubes[0])
+                   // cubes[i].geometry.applyMatrix( new THREE.Matrix4().setPosition( new THREE.Vector3(-500, 100, 0 ) ));
+                  //  cubes[i].geometry.verticesNeedUpdate = true;
+                    /*var newcube = cubes[i].clone()
+                    scene.add(newcube)
+                    cubes.push(newcube)
+                    console.log(cubes[i]);*/
+                    dev = false
+                }
+                hit(cubes[i]);
             };
             renderer.render(scene, camera);
         };
